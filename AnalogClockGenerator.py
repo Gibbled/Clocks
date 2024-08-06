@@ -3,6 +3,7 @@ from PIL import Image, ImageDraw
 import time
 from datetime import datetime
 
+
 class AnalogClockGenerator:
     def __init__(self, hour_hand_color: tuple = (255, 255, 255, 255),
                  minute_hand_color: tuple = (255, 255, 255, 255),
@@ -14,7 +15,7 @@ class AnalogClockGenerator:
                  minute_hand_width: int = 5,
                  second_hand_width: int = 3
                  ):
-        
+
         self.hour_hand_color = hour_hand_color
         self.minute_hand_color = minute_hand_color
         self.second_hand_color = second_hand_color
@@ -43,7 +44,7 @@ class AnalogClockGenerator:
 
         # Draw hour markings
         self.draw_hour_markings(draw, center, width=self.hour_markings_width)
-        
+
         # Draw origin in the center
         radius = 15
         draw.ellipse((center - radius, center - radius, center + radius, center + radius), fill=self.origin_color)
@@ -63,9 +64,8 @@ class AnalogClockGenerator:
         angle = second * (360 / 60)
         self.draw_hand(draw, center, angle, lenght, self.second_hand_color, self.second_hand_width)
 
-
         return canvas
-    
+
     # -------------- #
     # Helper methods #
     # -------------- #

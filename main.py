@@ -1,47 +1,48 @@
 import json
-from GtkHelper.ItemListComboRow import ItemListComboRow, ItemListComboRowListItem
-from src.backend.PluginManager.ActionBase import ActionBase
-from src.backend.PluginManager.PluginBase import PluginBase
-from src.backend.PluginManager.ActionHolder import ActionHolder
-from src.backend.DeckManagement.InputIdentifier import Input
-from src.backend.PluginManager.ActionInputSupport import ActionInputSupport
-
-# Import gtk modules
-import gi
-gi.require_version("Gtk", "4.0")
-gi.require_version("Adw", "1")
-from gi.repository import Gtk, Adw, Gio
-
 import sys
 import os
 from PIL import Image
 from loguru import logger as log
 import requests
 from datetime import datetime
-
-# Add plugin to sys.paths
-sys.path.append(os.path.dirname(__file__))
-
-# Import globals
+from GtkHelper.ItemListComboRow import ItemListComboRow, ItemListComboRowListItem
+from src.backend.PluginManager.ActionBase import ActionBase
+from src.backend.PluginManager.PluginBase import PluginBase
+from src.backend.PluginManager.ActionHolder import ActionHolder
+from src.backend.DeckManagement.InputIdentifier import Input
+from src.backend.PluginManager.ActionInputSupport import ActionInputSupport
+from gi.repository import Gtk, Adw, Gio
 import globals as gl
+from AnalogClockGenerator import AnalogClockGenerator
 
 # Import own modules
 from src.backend.DeckManagement.DeckController import DeckController
 from src.backend.PageManagement.Page import Page
 
-from AnalogClockGenerator import AnalogClockGenerator
+
+# Import gtk modules
+import gi
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
+
+
+# Add plugin to sys.paths
+sys.path.append(os.path.dirname(__file__))
+
+# Import globals
+
 
 class AnalogClock(ActionBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         self.generator = AnalogClockGenerator(
             hour_markings_width=9,
             hour_hand_width=15,
             minute_hand_width=11,
             second_hand_width=6
         )
-        
+
     def on_ready(self):
         self.show()
 
@@ -57,9 +58,9 @@ class AnalogClock(ActionBase):
 class DigitalClock(ActionBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         self.has_configuration = True
-        
+
         self.points_visible: bool = False # Keep track of ":" status for the clock
 
     def on_ready(self):
@@ -83,7 +84,6 @@ class DigitalClock(ActionBase):
 
         return [self.twenty_four_format_switch, self.show_seconds_switch, self.label_position_row]
 
-    
     def load_defaults(self):
         settings = self.get_settings()
 
@@ -109,13 +109,13 @@ class DigitalClock(ActionBase):
         settings = self.get_settings()
         settings["label-position"] = self.label_position_row.get_selected_item().key
         self.set_settings(settings)
-        ## Clear
+        # Clear
         self.set_top_label(None)
         self.set_center_label(None)
         self.set_bottom_label(None)
         # Show
         self.show()
-        
+
     def on_tick(self):
         self.show()
 
@@ -130,7 +130,6 @@ class DigitalClock(ActionBase):
         # Don't blink points if seconds are enabled
         if settings.get("show-seconds", False):
             seperator = ":"
-
 
         now = datetime.now()
 
@@ -155,7 +154,7 @@ class DigitalClock(ActionBase):
 class Date(ActionBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         self.has_configuration = True
 
     def get_config_rows(self) -> list:
@@ -169,7 +168,7 @@ class Date(ActionBase):
         self.label_position_row.connect("notify::selected", self.on_label_position_changed)
 
         return [self.key_entry, self.label_position_row]
-    
+
     def load_config_values(self):
         settings = self.get_settings()
         self.key_entry.set_text(settings.get("key", "%d-%m-%Y"))
@@ -185,7 +184,7 @@ class Date(ActionBase):
         settings = self.get_settings()
         settings["label-position"] = self.label_position_row.get_selected_item().key
         self.set_settings(settings)
-        ## Clear
+        # Clear
         self.set_top_label(None)
         self.set_center_label(None)
         self.set_bottom_label(None)
@@ -214,7 +213,7 @@ class ClocksPlugin(PluginBase):
 
         self.lm = self.locale_manager
 
-        ## Register actions
+        # Register actions
         self.analog_clock_holder = ActionHolder(
             plugin_base=self,
             action_base=AnalogClock,
